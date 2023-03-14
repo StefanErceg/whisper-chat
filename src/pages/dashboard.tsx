@@ -9,9 +9,9 @@ export const Dashboard = () => (
 		<div className="bg-slate-100 flex flex-col w-full h-full items-center justify-start space-y-10 rounded-xl">
 			<img className="w-60 h-60" src="src/assets/logo_transparent.png" />
 			<div className="flex space-x-10">
-				<DashboardItem label="Start a new chat" icon={<StartChatIcon />} />
-				<DashboardItem label="Add a friend" icon={<AddFriendIcon />} />
-				<DashboardItem label="About WhisperChat" icon={<AboutIcon />} />
+				<DashboardItem to="/chat" label="Start a new chat" icon={<StartChatIcon />} />
+				<DashboardItem to="/" label="Add a friend" icon={<AddFriendIcon />} />
+				<DashboardItem to="/" label="About WhisperChat" icon={<AboutIcon />} />
 			</div>
 
 			<Logout />
