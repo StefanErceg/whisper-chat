@@ -1,12 +1,18 @@
+import { formatTime } from '../../utils';
+
 interface Props {
+	content: string;
 	received: boolean;
+	timestamp: number;
 }
 
-export const Message = ({ received }: Props) => (
+export const Message = ({ content, timestamp, received }: Props) => (
 	<div className={`w-full p-4 flex ${received ? 'justify-start' : 'justify-end'}`}>
-		<div className={`max-w-3xl p-4 ${received ? 'bg-blue-200' : 'bg-white'} rounded-xl w-full`}>
-			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maxime fuga libero, illum aliquid repellendus laboriosam porro quidem
-			debitis cupiditate id sit corrupti, ullam provident veniam quaerat labore ad molestias quas.
+		<div
+			className={`max-w-3xl p-4 flex justify-between items-center ${received ? 'bg-blue-200' : 'bg-white'} rounded-xl w-fit break-all`}
+		>
+			{content}
+			<span className="text-sm text-slate-800/50 ml-4 break-keep">{formatTime(timestamp)}</span>
 		</div>
 	</div>
 );
