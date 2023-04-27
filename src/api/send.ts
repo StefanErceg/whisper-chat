@@ -8,6 +8,6 @@ const http = axios.create({
 	baseURL: `${LINK}/api/${VERSION}`,
 });
 
-const sendMessage = (message: Message) => [http.post('/message', message)];
+const sendMessage = (message: Message) => http.post('/message', message);
 
 export { sendMessage };

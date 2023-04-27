@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export interface User {
 	id: string;
@@ -6,12 +6,12 @@ export interface User {
 }
 
 type ContextType = {
-	user: User;
-	setUser: (user: User) => void;
+	user: User | null;
+	setUser: (user: User | null) => void;
 };
 
 export const UserContext = createContext<ContextType>({
-	user: { id: '', name: '' },
+	user: null,
 	setUser: () => {},
 });
 
@@ -20,7 +20,12 @@ interface ContextProviderProps {
 }
 
 export const UserContextProvider = ({ children }: ContextProviderProps) => {
-	const [user, setUser] = useState<User>({ id: '', name: '' });
+	const initial = JSON.parse(localStorage.getItem('user') || 'null') || null;
+	const [user, setUser] = useState<User | null>(initial);
+
+	useEffect(() => {
+		localStorage.setItem('user', JSON.stringify(user));
+	}, [user]);
 
 	return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
