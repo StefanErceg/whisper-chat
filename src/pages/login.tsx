@@ -4,6 +4,7 @@ import { login } from '../api/auth';
 import { Input } from '../components/general/Input';
 import { Button } from '../components/general/Button';
 import { useUser } from '../context/UserContext';
+import { notify } from '../components/general/Notifications';
 
 export const Login = () => {
 	const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ export const Login = () => {
 		} catch (error) {
 			setEmail('');
 			setPassword('');
+			notify.error('Wrong email or password!');
 			console.error(error);
 		}
 	};

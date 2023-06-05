@@ -2,31 +2,38 @@ import { v4 as uuid } from 'uuid';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
 import { sendMessage } from '../../api/send';
+import { MessageMeta } from '../../types/message';
+import { useUser } from '../../context/UserContext';
 import { SendMessageIcon } from '../icons/SendMessage';
 import { useMessages } from '../../context/MessagesContext';
+import { useChatPerson } from '../../context/ChatPersonContext';
 
 export const MessageInput = () => {
 	const { addMessage } = useMessages();
+	const { user } = useUser();
+	const { chatPerson } = useChatPerson();
 
 	const [message, setMessage] = useState('');
 
 	const sendHandler = async () => {
 		if (message === '') return;
 		try {
-			const meta = {
+			const meta: MessageMeta = {
 				timestamp: Date.now(),
 				id: uuid(),
+				part: 1,
+				total: 1,
 			};
 
-			//TODO update sender
 			const payload = {
-				content: message,
 				meta,
-				sender: 'Stefan',
+				sender: user!,
+				content: message,
+				receiver: chatPerson!,
 			};
 
 			await sendMessage(payload);
-			addMessage({ content: message, meta, sender: 'Stefan' });
+			addMessage({ content: message, meta, sender: user!, receiver: chatPerson! });
 			setMessage('');
 		} catch (err) {
 			console.error(err);

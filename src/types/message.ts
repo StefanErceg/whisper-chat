@@ -1,8 +1,15 @@
+import { User } from '../context/UserContext';
+
 export interface Message {
 	content: string;
-	sender: string;
-	meta: {
-		id: string;
-		timestamp: number;
-	};
+	sender: User;
+	receiver: User;
+	meta: MessageMeta;
+}
+
+export interface MessageMeta {
+	id: string;
+	timestamp: number;
+	part: number;
+	total: number;
 }

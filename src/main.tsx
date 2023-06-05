@@ -1,24 +1,30 @@
+import { ToastContainer } from 'react-toastify';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { connect } from './api/socket';
+
 import { App } from './App';
-import { MessagesContextProvider } from './context/MessagesContext';
 import { UserContextProvider } from './context/UserContext';
+import { SocketContextProvider } from './context/SocketContext';
+import { MessagesContextProvider } from './context/MessagesContext';
+import { ChatPersonContextProvider } from './context/ChatPersonContext';
 
 import './index.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
-//connect to socket server for receiving messages
-connect();
-
 root.render(
 	<UserContextProvider>
-		<MessagesContextProvider>
-			<BrowserRouter>
-				<App />
-			</BrowserRouter>
-		</MessagesContextProvider>
+		<ChatPersonContextProvider>
+			<MessagesContextProvider>
+				<SocketContextProvider>
+					<BrowserRouter>
+						<ToastContainer />
+						<App />
+					</BrowserRouter>
+				</SocketContextProvider>
+			</MessagesContextProvider>
+		</ChatPersonContextProvider>
 	</UserContextProvider>
 );
