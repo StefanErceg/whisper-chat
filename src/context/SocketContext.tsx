@@ -33,7 +33,7 @@ interface SocketContextProviderProps {
 export const SocketContextProvider = ({ children }: SocketContextProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const { setConnectedUsers } = useChatPerson();
-	const { addMessage } = useMessages();
+	const { addToCache } = useMessages();
 
 	const connect = (user: User) => {
 		if (user) {
@@ -66,7 +66,7 @@ export const SocketContextProvider = ({ children }: SocketContextProviderProps) 
 			});
 
 			socket.on(MessageEvent.MESSAGE, (message: Message) => {
-				addMessage(message);
+				addToCache(message);
 			});
 
 			setSocket(socket);
