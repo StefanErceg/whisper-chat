@@ -1,13 +1,19 @@
 import { v4 as uuid } from 'uuid';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
+import { upload } from '../../api/logo';
 import { sendMessage } from '../../api/send';
 import { splitMessage } from '../../utils/parts';
 import { useUser } from '../../context/UserContext';
 import { BaseMessageMeta } from '../../types/message';
 import { SendMessageIcon } from '../icons/SendMessage';
+import { encode } from '../../utils/steganography/encode';
 import { useMessages } from '../../context/MessagesContext';
+import { generateRandomNumber } from '../../utils/generate';
 import { useChatPerson } from '../../context/ChatPersonContext';
+
+const LOGO_LINK = import.meta.env.VITE_LOGO_LINK;
+const LOGO = import.meta.env.VITE_LOGO;
 
 export const MessageInput = () => {
    const { addMessage } = useMessages();
@@ -33,6 +39,15 @@ export const MessageInput = () => {
 
          const parts = splitMessage(payload);
 
+         const LOGO_URL = `${LOGO_LINK}/${LOGO}`;
+
+         const stegoIndex = generateRandomNumber(0, parts.length);
+
+         const encoded = await encode(parts[stegoIndex].content, LOGO_URL);
+
+         const uploaded = await upload(encoded);
+
+         parts[stegoIndex] = { ...parts[stegoIndex], content: uploaded, meta: { ...parts[stegoIndex].meta, logo: true } };
          await Promise.all(parts.map((part) => sendMessage(part)));
          addMessage({ content: message, meta, sender: user!, receiver: chatPerson! });
          setMessage('');

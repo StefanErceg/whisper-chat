@@ -1,7 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { BaseMessage, Message } from '../types/message';
 import { joinMessages } from '../utils/parts';
+import { BaseMessage, Message } from '../types/message';
+import { decodeMessageFromImage } from '../utils/steganography/decode';
+
+const LOGO_LINK: string = import.meta.env.VITE_LOGO_LINK || '';
 
 type ContextType = {
    messages: BaseMessage[];
@@ -25,8 +28,13 @@ export const MessagesContextProvider = ({ children }: MessageContextProviderProp
    const [messages, setMessages] = useState<BaseMessage[]>([]);
    const [messageCache, setMessageCache] = useState<Record<string, Message[]>>({});
 
-   const addToCache = (message: Message) => {
-      const { id } = message.meta;
+   const addToCache = async (message: Message) => {
+      const { id, logo } = message.meta;
+
+      if (logo) {
+         let content = await decodeMessageFromImage(`${LOGO_LINK}/${message.content}`);
+         message = { ...message, content };
+      }
 
       setMessageCache((cache) => ({
          ...cache,
