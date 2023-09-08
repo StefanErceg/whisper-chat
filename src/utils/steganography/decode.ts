@@ -1,6 +1,9 @@
 import { config } from './config';
 import { loadImg, findNextPrime } from './utils';
 
+const width = +import.meta.env.VITE_LOGO_WIDTH;
+const height = +import.meta.env.VITE_LOGO_HEIGHT;
+
 export const decodeMessageFromImage = async (image: HTMLImageElement | string): Promise<string> => {
    // Handle image url
    if (typeof image === 'string') {
@@ -24,9 +27,6 @@ export const decodeMessageFromImage = async (image: HTMLImageElement | string): 
    if (!shadowCtx) throw new Error('Shadow canvas context not available!');
 
    shadowCanvas.style.display = 'none';
-   //TEMP
-   const width = 1200;
-   const height = 1200;
 
    shadowCanvas.width = width;
    shadowCanvas.height = width;
