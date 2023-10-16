@@ -9,6 +9,8 @@ const LOGO_LINK: string = import.meta.env.VITE_LOGO_LINK || '';
 type ContextType = {
    messages: BaseMessage[];
    messageCache: Record<string, Message[]>;
+
+   clearMessages: () => void;
    addToCache: (message: Message) => void;
    addMessage: (message: BaseMessage) => void;
 };
@@ -18,6 +20,7 @@ export const MessagesContext = createContext<ContextType>({
    messageCache: {},
    addToCache: () => {},
    addMessage: () => {},
+   clearMessages: () => {},
 });
 
 interface MessageContextProviderProps {
@@ -61,7 +64,15 @@ export const MessagesContextProvider = ({ children }: MessageContextProviderProp
       setMessages((prevMessages) => [...prevMessages, message]);
    };
 
-   return <MessagesContext.Provider value={{ messages, addMessage, messageCache, addToCache }}>{children}</MessagesContext.Provider>;
+   const clearMessages = () => {
+      setMessages([]);
+   };
+
+   return (
+      <MessagesContext.Provider value={{ messages, addMessage, clearMessages, messageCache, addToCache }}>
+         {children}
+      </MessagesContext.Provider>
+   );
 };
 
 export const useMessages = () => useContext(MessagesContext);

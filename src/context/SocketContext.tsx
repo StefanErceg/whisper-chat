@@ -10,70 +10,75 @@ import { useMessages } from './MessagesContext';
 const SOCKET_LINK: string = import.meta.env.VITE_SOCKET_LINK || '';
 
 type ContextType = {
-	socket: Socket | null;
-	connect: (user: User) => void;
+   socket: Socket | null;
+   connect: (user: User) => void;
 };
 
 enum MessageEvent {
-	MESSAGE = 'message',
-	JOINED = 'user_joined',
-	LEFT = 'user_left',
-	USERS = 'connected_users',
+   MESSAGE = 'message',
+   JOINED = 'user_joined',
+   LEFT = 'user_left',
+   USERS = 'connected_users',
 }
 
 export const SocketContext = createContext<ContextType>({
-	socket: null,
-	connect: () => {},
+   socket: null,
+   connect: () => {},
 });
 
 interface SocketContextProviderProps {
-	children: React.ReactNode;
+   children: React.ReactNode;
 }
 
 export const SocketContextProvider = ({ children }: SocketContextProviderProps) => {
-	const [socket, setSocket] = useState<Socket | null>(null);
-	const { setConnectedUsers } = useChatPerson();
-	const { addToCache } = useMessages();
+   const [socket, setSocket] = useState<Socket | null>(null);
+   const { setConnectedUsers } = useChatPerson();
+   const { addToCache } = useMessages();
 
-	const connect = (user: User) => {
-		if (user) {
-			const socket = io(SOCKET_LINK, {
-				query: {
-					userId: user.id,
-					userName: user.name,
-				},
-			});
+   const connect = (user: User) => {
+      if (user) {
+         const socket = io(SOCKET_LINK, {
+            query: {
+               userId: user.id,
+               userName: user.name,
+            },
+         });
 
-			socket.on('connect', () => {
-				console.log('Connected to socket server');
-			});
+         socket.on('connect', () => {
+            console.log('Connected to socket server');
+         });
 
-			socket.on('disconnect', () => {
-				console.log('Disconnected from socket server');
-			});
+         socket.on('disconnect', () => {
+            console.log('Disconnected from socket server');
+         });
 
-			socket.on(MessageEvent.USERS, (users) => {
-				setConnectedUsers(users);
-			});
+         socket.on('error', (err) => {
+            console.error(err);
+            connect(user);
+         });
 
-			socket.on(MessageEvent.JOINED, ({ id, name }) => {
-				notify.success(`${name} joined!`);
-				setConnectedUsers((users) => [...users, { id, name }]);
-			});
+         socket.on(MessageEvent.USERS, (users) => {
+            setConnectedUsers(users);
+         });
 
-			socket.on(MessageEvent.LEFT, (userId) => {
-				setConnectedUsers((users) => users.filter(({ id }) => id !== userId));
-			});
+         socket.on(MessageEvent.JOINED, ({ id, name }) => {
+            notify.success(`${name} joined!`);
+            setConnectedUsers((users) => [...users, { id, name }]);
+         });
 
-			socket.on(MessageEvent.MESSAGE, (message: Message) => {
-				addToCache(message);
-			});
+         socket.on(MessageEvent.LEFT, (userId) => {
+            setConnectedUsers((users) => users.filter(({ id }) => id !== userId));
+         });
 
-			setSocket(socket);
-		}
-	};
+         socket.on(MessageEvent.MESSAGE, (message: Message) => {
+            addToCache(message);
+         });
 
-	return <SocketContext.Provider value={{ socket, connect }}>{children}</SocketContext.Provider>;
+         setSocket(socket);
+      }
+   };
+
+   return <SocketContext.Provider value={{ socket, connect }}>{children}</SocketContext.Provider>;
 };
 
 export const useSocket = () => useContext(SocketContext);

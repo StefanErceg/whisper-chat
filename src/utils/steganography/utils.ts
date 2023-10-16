@@ -53,5 +53,5 @@ export const loadImg = async (url: string): Promise<HTMLImageElement> =>
       image.crossOrigin = 'Anonymous';
       setTimeout(() => {
          resolve(image);
-      }, 100);
+      }, 300);
    });
